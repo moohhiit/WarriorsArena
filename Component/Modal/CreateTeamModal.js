@@ -245,6 +245,7 @@ export default function CreateTeamModal({ visible, onClose, users, loading, erro
                   <View style={{ flexDirection: 'row', justifyContent: "space-around", }} key={i} >
 
                     <Text style={{ color: 'black' }} >
+                      
                       Player ID :  {e ? e.id : null}
                     </Text>
                     <Text style={{ color: 'black' }} >
