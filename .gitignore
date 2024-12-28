@@ -1,0 +1,85 @@
+# Node.js dependencies
+node_modules/
+
+# macOS files
+.DS_Store
+
+# Logs
+*.log
+*.log.*
+
+# React Native Packager
+.expo/
+.expo-shared/
+*.expo/
+
+# Metro bundler
+metro-cache/
+react-native/packager-cache/
+
+# Android build files
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+android/.idea/
+*.keystore
+
+# iOS build files
+ios/Pods/
+ios/build/
+ios/*.xcodeproj/
+ios/*.xcworkspace/
+ios/.xcuserdata/
+ios/.expo/
+ios/DerivedData/
+*.xcuserstate
+
+# Fastlane
+fastlane/report.xml
+fastlane/screenshots/
+fastlane/test_output/
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# Generated API keys or config
+.env
+.env.*
+google-services.json
+google-service-info.plist
+
+# npm/yarn debug files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Coverage
+coverage/
+.jest/
+jest-cache/
+jest-test-results.json
+
+# Temporary files
+*.tmp
+*.swp
+*.bak
+*~
+
+# Transpiled files
+*.map
+*.babelrc
+*.tsbuildinfo
+
+# Cache files
+*.cache/
+.cache-loader/
+
+# Watchman
+.watchmanconfig
+
+# Miscellaneous
+*.lock
+*.iml
+*.log
