@@ -15,6 +15,8 @@ export default function MyTeam() {
     const [TeamrequestVisible, setTeamRequestVisible] = useState(false)
     const [CreateTeamVisible, setCreateTeamVisible] = useState(false)
     const [td, settd] = useState([])
+
+
     const detail = async () => {
       try {
         if (PlayerData) {
@@ -107,28 +109,44 @@ export default function MyTeam() {
                             td.map((_t, i) => {
                               return (
                                 <View key={i} style={{ borderBottomColor: 'gold', borderBottomWidth: 1 }} >
-                                  <View style={{ justifyContent: 'space-between', flexDirection: "row", margin: 10, backgroundColor: '#7A1CAC', padding: 10, borderRadius: 10 }} >
+
+                                  <TouchableOpacity style={{ justifyContent: 'space-between', flexDirection: "row", margin: 10, backgroundColor: '#7A1CAC', padding: 10, borderRadius: 10 }} onPress={()=>{Navigation.navigate('TeamDetail')}}  >
                                     <Text style={{ color: 'white', fontSize: 20, fontFamily: "serif" }}  >{_t.teamName}</Text>
                                     <Text style={{ color: 'white', alignSelf: "center" }}  >#{_t.TeamID}</Text>
                                     <Text style={{ color: 'white', alignSelf: "center" }}  >{_t.game}</Text>
+                                  </TouchableOpacity>
+                                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }} >
+                                    <View>
+
+                                    </View>
+                                    <View style={{ flexDirection: 'row', gap: 10 , marginHorizontal:10}} >
+                                      <Text style={{ color: "white" }} >
+                                        Win Rate :
+                                      </Text>
+                                      <Text style={{ color: "green" }} >
+                                        {
+                                          _t.WinMatch != 0 ? `${_t.WinMatch / _t.teamGameHistory.length * 100} % ` : "0%"
+                                        }
+                                      </Text>
+                                    </View>
                                   </View>
                                   <View>
                                     {_t.teamMembers ?
-                                      <View style={{ justifyContent: "space-between", margin: 10, padding: 10, paddingTop: 5, borderLeftWidth: 1, borderRightWidth: 1, marginTop: 0 }} >
+                                      <View style={{ justifyContent: "space-between",  paddingTop: 5, borderLeftWidth: 1, borderRightWidth: 1, marginTop: 0 }} >
                                         <FlatList
                                           contentContainerStyle={{
                                             flexGrow: 1,
-                                            justifyContent: 'space-between', 
+                                            justifyContent: 'space-between',
                                           }}
                                           numColumns={2}
                                           data={_t.teamMembers}
                                           renderItem={({ item }) => {
                                             return (
                                               <View style={{
-                                                flex: 1, 
+                                                flex: 1,
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
-                                                margin:5
+                                                margin: 5
                                               }} >
                                                 {/* <Icon type={Icons.FontAwesome5} name='crown' color='gold' /> */}
                                                 <Text style={{
