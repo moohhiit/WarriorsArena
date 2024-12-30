@@ -71,12 +71,10 @@ export default function MyTeam() {
 
                 >
                   <View style={{ flexDirection: 'row', justifyContent: 'space-around', padding: 6 }} >
-                    <Text style={{ fontWeight: 1, fontSize: 18, alignSelf: 'center', fontWeight: 'bold', color: 'black' }}  >
-                      {PlayerData ? PlayerData.teamRequest.length : null}
-                    </Text>
-                    <Icon type={Icons.AntDesign} name='team' color='black' size={30} />
+                   
+                    <Icon type={Icons.AntDesign} name='search1' color='black' size={30} />
                     <Text style={{ fontWeight: 1, fontSize: 18, alignSelf: 'center', color: 'black' }}  >
-                      Team Request
+                     Teams
                     </Text>
 
                   </View>
@@ -110,16 +108,23 @@ export default function MyTeam() {
                               return (
                                 <View key={i} style={{ borderBottomColor: 'gold', borderBottomWidth: 1 }} >
 
-                                  <TouchableOpacity style={{ justifyContent: 'space-between', flexDirection: "row", margin: 10, backgroundColor: '#7A1CAC', padding: 10, borderRadius: 10 }} onPress={()=>{Navigation.navigate('TeamDetail')}}  >
+                                  <TouchableOpacity style={{ justifyContent: 'space-between', flexDirection: "row", margin: 10, backgroundColor: '#7A1CAC', padding: 10, borderRadius: 10 }} onPress={() => { Navigation.navigate('TeamDetail') }}  >
                                     <Text style={{ color: 'white', fontSize: 20, fontFamily: "serif" }}  >{_t.teamName}</Text>
                                     <Text style={{ color: 'white', alignSelf: "center" }}  >#{_t.TeamID}</Text>
                                     <Text style={{ color: 'white', alignSelf: "center" }}  >{_t.game}</Text>
                                   </TouchableOpacity>
                                   <View style={{ flexDirection: 'row', justifyContent: 'space-between' }} >
-                                    <View>
-
+                                    <View style={{flexDirection : 'row' , gap: 10, marginHorizontal: 15 }} >
+                                      <Text style={{ color: "white" }} >
+                                        Team Created
+                                      </Text>
+                                      <Text style={{ color: "gold" }} >
+                                        {
+                                          _t.teamLeader
+                                        }
+                                      </Text>
                                     </View>
-                                    <View style={{ flexDirection: 'row', gap: 10 , marginHorizontal:10}} >
+                                    <View style={{ flexDirection: 'row', gap: 10, marginHorizontal: 15 }} >
                                       <Text style={{ color: "white" }} >
                                         Win Rate :
                                       </Text>
@@ -132,39 +137,26 @@ export default function MyTeam() {
                                   </View>
                                   <View>
                                     {_t.teamMembers ?
-                                      <View style={{ justifyContent: "space-between",  paddingTop: 5, borderLeftWidth: 1, borderRightWidth: 1, marginTop: 0 }} >
-                                        <FlatList
-                                          contentContainerStyle={{
-                                            flexGrow: 1,
-                                            justifyContent: 'space-between',
-                                          }}
-                                          numColumns={2}
-                                          data={_t.teamMembers}
-                                          renderItem={({ item }) => {
-                                            return (
-                                              <View style={{
-                                                flex: 1,
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                margin: 5
-                                              }} >
-                                                {/* <Icon type={Icons.FontAwesome5} name='crown' color='gold' /> */}
-                                                <Text style={{
-                                                  color: 'white', fontSize: 15,
-                                                }}
-                                                >
-                                                  {item.name}
-                                                </Text>
-                                              </View>
-                                            )
-                                          }}
-                                        ></FlatList>
+                                      <View style={{ justifyContent: "space-between", paddingTop: 15, borderLeftWidth: 1, borderRightWidth: 1, marginTop: 0, padding: 20 }} >
+                                        {_t.teamMembers.map((_, i) => {
+                                          return (
+                                            <View key={i} style={{ justifyContent: 'space-between', flexDirection: 'row' }}  >
+                                              <Text style={{ color: 'white' }} >
+                                                {_.name}
+                                              </Text>
+                                              <Text style={{ color: 'white' }} >
+                                                {_.id}
+                                              </Text>
+                                            </View>
+                                          )
+                                        })}
+
 
                                       </View>
 
                                       :
 
-                                      <Text style={{ color: 'black' }} >
+                                      <Text style={{ color: 'White' }} >
                                         Team Member
                                       </Text>
 

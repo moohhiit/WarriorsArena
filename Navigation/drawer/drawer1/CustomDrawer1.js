@@ -110,16 +110,17 @@ const CustomDrawer1 = (props) => {
   return (
     <SafeAreaView style={styles.container}>
       {/* header */}
-      <Animated.View style={[styles.row, styles.view, styles.marginTop, viewStyles2('top') , {backgroundColor:'black'}]}>
+      <Animated.View style={[styles.row, styles.view, styles.marginTop, viewStyles2('top') , {backgroundColor:'black' , alignItems:'center' ,paddingHorizontal:50}]}>
         <Image style={{
           padding: constant.SPACING / 2.4,
           borderRadius: constant.borderRadius,
           margin: constant.SPACING / 2,
-          height: 50,
-          width: 50
-        }} source={require('../../../Component/AppLogo.png')} >
+          height: 30,
+          width: 30
+        }} source={require('../../../Component/Coin.png')} >
         </Image>
-        <Text style={styles.headerTitle}>Hello Gamers</Text>
+         <Text style={[styles.headerTitle , {alignSelf:'center'}]}>{PlayerData.coinCollection}</Text>
+       
       </Animated.View>
       {/* Drawer List Item */}
       <Animated.ScrollView
@@ -261,7 +262,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: constant.titleFontSize,
     color: 'gold',
-    fontFamily: "serif"
   },
   profile: {
     marginVertical: constant.SPACING / 2,

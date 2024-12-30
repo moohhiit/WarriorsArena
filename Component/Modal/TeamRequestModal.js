@@ -1,77 +1,170 @@
-import { Modal, View, Text, ActivityIndicator, Button, FlatList, TouchableOpacity } from 'react-native';
-import React, { useContext } from 'react'
+import { Modal, View, Text, ActivityIndicator, Button, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react'
 import Icon, { Icons } from '../Icons';
 import { DataContext } from '../../Context/ContextConection';
+import firestore from '@react-native-firebase/firestore';
 
 export default function TeamRequestModal({ visible, onClose, users, loading, error, teamrequestDetail }) {
     try {
-        const { AcceptTeam, rejctteam } = useContext(DataContext)
+        const [query, setQuery] = useState(''); 
+        const [results, setResults] = useState([]); 
+        const [loading, setLoading] = useState(false);
+
+        useEffect(() => {
+            if (query.trim() === '') {
+                setResults([]);
+                return;
+            }
+
+            const debounceTimer = setTimeout(() => {
+                performSearch(query);
+            }, 300); 
+
+            return () => clearTimeout(debounceTimer);
+        }, [query]);
+
+      
+        const performSearch = async (text) => {
+            setLoading(true);
+            try {
+                const snapshot = await firestore()
+                    .collection('PlayerTeams')
+                    .where('TeamID', '>=', text)
+                    .where('TeamID', '<=', text + '\uf8ff')
+                    .get();
+
+                const docs = snapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+
+                setResults(docs);
+            } catch (err) {
+                console.error('Error fetching search results:', err);
+                setResults([]);
+            }
+            setLoading(false);
+        };
 
 
+        return (
+            <Modal visible={visible} transparent={true} animationType="slide">
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                       
+                        <TouchableOpacity
+                            style={styles.closeButton}
+                            onPress={() => {
+                                setQuery('')
+                                onClose()}}
+                        >
+                        <Icon type={Icons.AntDesign} name='closecircleo' color='white' />
+                        </TouchableOpacity>
 
-    return (
-        <Modal visible={visible} transparent={true} animationType="slide">
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                <View style={{ width: 300, padding: 20, backgroundColor: 'white', borderRadius: 10 }}>
-                    <FlatList
-                        data={teamrequestDetail}
-                        renderItem={({ item }) => {
-                            return (
-                                <View style={{ backgroundColor: '#FFFBE6', padding: 10, flexDirection: 'row', justifyContent: 'space-between' , borderWidth:.5 , borderRadius:10}} >
-                                    <View>
-                                        <Text style={{ color: 'black', fontSize: 20 }} >
-                                            {item.teamName}
-                                        </Text>
-                                        <Text style={{ color: 'black' }} >
-                                            #{item.teamId}
-                                        </Text>
+                        {/* Search Input */}
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Enter Team Id"
+                            value={query}
+                            onChangeText={setQuery}
+                        />
+                        {results.length > 0 ? (
+                            <FlatList
+                                data={results}
+                                keyExtractor={(item) => item.id}
+                                renderItem={({ item }) => (
+                                    <View style={[styles.resultItem, { backgroundColor: '#7A1CAC', borderRadius: 10, marginHorizontal: 10, flexDirection: 'row', justifyContent: 'space-between', padding: 10 }]}>
+                                        <Text style={styles.resultSubText}> #{item.id}</Text>
+                                        <Text style={styles.resultSubText}>{item.teamName}</Text>
+                                        <TouchableOpacity>
+                                            <Icon type={Icons.AntDesign} name='addusergroup' color='white' />
+                                        </TouchableOpacity>
                                     </View>
-                                    <TouchableOpacity
-                                        onPress={() => {
-                                            AcceptTeam(item.teamId)
-                                            setTimeout(()=>{
-                                                onClose()
-                                            },2000)
-                                        }}
-
-
-                                    >
-
-                                        <Icon type={Icons.Octicons} name='check-circle' color='green' size={35} />
-
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        onPress={() => {
-                                            rejctteam(item.teamId)
-                                            setTimeout(()=>{
-                                                onClose()       
-                                            },2000)
-                                        }}
-
-
-                                    >
-                                        <Icon type={Icons.Octicons} name='x-circle' color='red' size={35} />
-
-                                    </TouchableOpacity>
-                                </View>
+                                )}
+                            />
+                        ) : (
+                            !loading && query.trim() !== '' && (
+                                <Text style={styles.noResults}>No results found</Text>
                             )
-                        }}
-
-                    />
-
-                    <TouchableOpacity style={{ backgroundColor: '#36C2CE', padding: 10, borderRadius: 10, margin: 20 }}
-                        onPress={onClose}
-
-                    >
-                        <Text style={{ color: 'black', fontWeight: 'bold', alignSelf: "center", fontSize: 20 }} >Close</Text>
-                    </TouchableOpacity>
-
+                        )}
+                    </View>
                 </View>
-            </View>
-        </Modal>
-    )
+            </Modal>
+        )
     } catch (error) {
         console.log(error)
     }
-    
+
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Transparent overlay
+    },
+    modalContent: {
+        margin: 20,
+        backgroundColor: 'black',
+        borderRadius: 10,
+        padding: 20,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    closeButton: {
+        alignSelf: 'flex-end',
+        marginBottom: 50,
+    },
+    closeButtonText: {
+        fontSize: 18,
+        fontWeight: 'white',
+        color: '#888',
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: 'white',
+        borderRadius: 8,
+        padding: 10,
+        marginBottom: 10,
+        color: 'white'
+    },
+    loading: {
+        color: 'White',
+        marginVertical: 10,
+    },
+    resultItem: {
+
+        borderWidth: 1,
+        padding: 5,
+        borderBottomWidth: 1,
+        borderBottomColor: 'white',
+
+    },
+    resultText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: 'white'
+    },
+    resultSubText: {
+        fontSize: 15,
+        color: 'white',
+        fontWeight: 'bold'
+    },
+    noResults: {
+        textAlign: 'center',
+        marginVertical: 20,
+        color: 'white',
+    },
+});
