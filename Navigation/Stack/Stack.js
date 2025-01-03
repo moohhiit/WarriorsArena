@@ -17,7 +17,7 @@ function StackNev() {
             <Stack.Screen name="EnteryScreen" component={DrawerNav1} />
             <Stack.Screen name="LoginScreen" component={LoginScreen} />
             <Stack.Screen name="RegisterScreen" component={RegistrationScreen} />
-            <Stack.Screen name="TeamDetail" component={TeamDetail} />
+            <Stack.Screen name="TeamDetail" component={TeamDetail}  />
 
         </Stack.Navigator>
     );

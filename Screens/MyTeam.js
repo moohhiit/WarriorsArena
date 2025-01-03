@@ -108,7 +108,7 @@ export default function MyTeam() {
                               return (
                                 <View key={i} style={{ borderBottomColor: 'gold', borderBottomWidth: 1 }} >
 
-                                  <TouchableOpacity style={{ justifyContent: 'space-between', flexDirection: "row", margin: 10, backgroundColor: '#7A1CAC', padding: 10, borderRadius: 10 }} onPress={() => { Navigation.navigate('TeamDetail') }}  >
+                                  <TouchableOpacity style={{ justifyContent: 'space-between', flexDirection: "row", margin: 10, backgroundColor: '#7A1CAC', padding: 10, borderRadius: 10 }} onPress={() => { Navigation.navigate('TeamDetail', {ID :_t.TeamID}) }}  >
                                     <Text style={{ color: 'white', fontSize: 20, fontFamily: "serif" }}  >{_t.teamName}</Text>
                                     <Text style={{ color: 'white', alignSelf: "center" }}  >#{_t.TeamID}</Text>
                                     <Text style={{ color: 'white', alignSelf: "center" }}  >{_t.game}</Text>
