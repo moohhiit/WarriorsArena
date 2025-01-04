@@ -36,6 +36,26 @@ export default function DataState({ children }) {
         return array.filter(element => element[property] !== value);
     };
 
+    const removePlyerFromTeam = async (docId, arrayField, idToRemove) => {
+        try {
+            const docRef = firestore().collection('PlayerTeams').doc(docId);
+            const doc = await docRef.get();
+            if (doc.exists) {
+                const data = doc.data();
+                const array = data[arrayField] || [];
+                const updatedArray = array.filter(item => item.id !== idToRemove);
+                await docRef.update({
+                    [arrayField]: updatedArray,
+                });
+                console.log('Object removed based on id successfully');
+            } else {
+                console.error('Document does not exist');
+            }
+        } catch (error) {
+            console.error('Error removing object by id:', error);
+        }
+    };
+
     const AcceptTeam = async (teamId) => {
         try {
             let docReaf = firestore().collection('playerInfo').doc(userLoginDetail.uid)
@@ -179,10 +199,10 @@ export default function DataState({ children }) {
 
 
     }
-    const getDetailFromServer = async (col , doc) =>{
+    const getDetailFromServer = async (col, doc) => {
         const dataRef = await firestore().collection(col).doc(doc).get()
         return dataRef.data()
-    }   
+    }
 
     async function featchDetail(col, arrayofdoc) {
         try {
@@ -203,8 +223,8 @@ export default function DataState({ children }) {
         }
     }
 
-    const UpdateGameUid = async (ffuid , BGMIuid)=>{
-        await firestore().collection('playerInfo').doc(userLoginDetail.uid).update({ 'FFUID': ffuid , BGMIUID :BGMIuid })
+    const UpdateGameUid = async (ffuid, BGMIuid) => {
+        await firestore().collection('playerInfo').doc(userLoginDetail.uid).update({ 'FFUID': ffuid, BGMIUID: BGMIuid })
     }
 
     useEffect(() => {
@@ -245,7 +265,7 @@ export default function DataState({ children }) {
 
 
 
-    
+
 
     useEffect(() => {
         if (userLoginDetail) {
@@ -275,7 +295,8 @@ export default function DataState({ children }) {
             rejctteam,
             enrolled,
             getDetailFromServer,
-            UpdateGameUid
+            UpdateGameUid,
+            removePlyerFromTeam
         }} >
             {children}
         </DataContext.Provider>
