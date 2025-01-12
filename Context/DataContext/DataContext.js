@@ -6,7 +6,7 @@ import firestore from '@react-native-firebase/firestore';
 
 export default function DataState({ children }) {
     const [PlayerData, setPlayerData] = useState('')
-
+    const [TeamList, setTeamList] = useState('')
 
     const [BGMISchdeuleSquardBr, setBGMISchdeuleSquardBr] = useState('')
     const [BGMISchdeuleSquardCs, setBGMISchdeuleSquardCs] = useState('')
@@ -24,6 +24,62 @@ export default function DataState({ children }) {
     const [GameLive, setGameLive] = useState([])
     const { userLoginDetail } = useContext(AuthContext)
 
+    const findEnrolement = async (value) => {
+        try {
+            const querySnapshot = await firestore()
+                .collection('enrolement')
+                .where('team', '==', value)
+                .get();
+
+            if (!querySnapshot.empty) {
+                return true
+            } else {
+               return false
+            }
+        } catch (error) {
+            console.error('Error fetching documents: ', error);
+        }
+    }
+
+    const findDataInArray = async (collection, field, value) => {
+        try {
+            const querySnapshot = await firestore()
+                .collection(collection)
+                .where(field, 'array-contains', value)
+                .get();
+
+            if (!querySnapshot.empty) {
+                const resultArray = querySnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+                return resultArray;
+            } else {
+                console.log('No documents found with the specified value in the array.');
+            }
+        } catch (error) {
+            console.error('Error fetching documents: ', error);
+        }
+    };
+
+
+
+    const getTeamlist = async () => {
+        try {
+            const teamCollection = firestore().collection('PlayerTeams');
+            const querySnapshot = await teamCollection.where('teamplayerId', 'array-contains', PlayerData.playerAppID).get();
+            if (!querySnapshot.empty) {
+                const filteredData = querySnapshot.docs.map(doc => doc.data());
+                console.log(filteredData)
+                setTeamList(filteredData);
+            } else {
+                console.log('No matching documents found!');
+                setTeamList(null)
+            }
+        } catch (error) {
+            console.error('Error fetching documents: ', error);
+        }
+    };
 
     const feacthPlayerdetail = async (uid) => {
 
@@ -228,8 +284,26 @@ export default function DataState({ children }) {
     }
 
     useEffect(() => {
+        const unsubscribe = firestore()
+            .collection('PlayerTeams')
+            .where('teamMembers', 'array-contains', { id: PlayerData.playerAppID })
+            .onSnapshot((snapshot) => {
+                const updatedDocuments = snapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+                setTeamList(updatedDocuments);
+            });
+
+        return () => unsubscribe();
+    }, [])
+
+    useEffect(() => {
         featchPlayerData()
     }, [])
+    useEffect(() => {
+        getTeamlist()
+    }, [PlayerData])
 
     useEffect(() => {
         if (userLoginDetail) {
@@ -275,6 +349,8 @@ export default function DataState({ children }) {
 
     return (
         <DataContext.Provider value={{
+            findDataInArray,
+            TeamList,
             freeFireScheduleSquard,
             PlayerData,
             BGMISchdeuleSquard,
@@ -296,7 +372,8 @@ export default function DataState({ children }) {
             enrolled,
             getDetailFromServer,
             UpdateGameUid,
-            removePlyerFromTeam
+            removePlyerFromTeam,
+            findEnrolement
         }} >
             {children}
         </DataContext.Provider>

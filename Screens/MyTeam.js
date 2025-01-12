@@ -10,7 +10,7 @@ import LottieView from 'lottie-react-native';
 export default function MyTeam() {
   try {
     const { initializing } = useContext(AuthContext)
-    const { PlayerData, featchDetail } = useContext(DataContext)
+    const { PlayerData, featchDetail, TeamList } = useContext(DataContext)
     const [isteam, setisteam] = useState(false)
     const [TeamrequestVisible, setTeamRequestVisible] = useState(false)
     const [CreateTeamVisible, setCreateTeamVisible] = useState(false)
@@ -71,10 +71,10 @@ export default function MyTeam() {
 
                 >
                   <View style={{ flexDirection: 'row', justifyContent: 'space-around', padding: 6 }} >
-                   
+
                     <Icon type={Icons.AntDesign} name='search1' color='black' size={30} />
                     <Text style={{ fontWeight: 1, fontSize: 18, alignSelf: 'center', color: 'black' }}  >
-                     Teams
+                      Teams
                     </Text>
 
                   </View>
@@ -94,27 +94,27 @@ export default function MyTeam() {
 
               </View>
               {
-                isteam ?
+                TeamList != null ?
                   <>
                     {
-                      td.length ? <ScrollView style={{ marginBottom: 60 }} >
+                      TeamList.length ? <ScrollView style={{ marginBottom: 60 }} >
 
                         <View
                           style={{ borderBottomWidth: 1, marginHorizontal: 10 }}
 
                         >
                           {
-                            td.map((_t, i) => {
+                            TeamList.map((_t, i) => {
                               return (
                                 <View key={i} style={{ borderBottomColor: 'gold', borderBottomWidth: 1 }} >
 
-                                  <TouchableOpacity style={{ justifyContent: 'space-between', flexDirection: "row", margin: 10, backgroundColor: '#7A1CAC', padding: 10, borderRadius: 10 }} onPress={() => { Navigation.navigate('TeamDetail', {ID :_t.TeamID}) }}  >
+                                  <TouchableOpacity style={{ justifyContent: 'space-between', flexDirection: "row", margin: 10, backgroundColor: '#7A1CAC', padding: 10, borderRadius: 10 }} onPress={() => { Navigation.navigate('TeamDetail', { ID: _t.TeamID }) }}  >
                                     <Text style={{ color: 'white', fontSize: 20, fontFamily: "serif" }}  >{_t.teamName}</Text>
                                     <Text style={{ color: 'white', alignSelf: "center" }}  >#{_t.TeamID}</Text>
                                     <Text style={{ color: 'white', alignSelf: "center" }}  >{_t.game}</Text>
                                   </TouchableOpacity>
                                   <View style={{ flexDirection: 'row', justifyContent: 'space-between' }} >
-                                    <View style={{flexDirection : 'row' , gap: 10, marginHorizontal: 15 }} >
+                                    <View style={{ flexDirection: 'row', gap: 10, marginHorizontal: 15 }} >
                                       <Text style={{ color: "white" }} >
                                         Team Created
                                       </Text>
@@ -184,6 +184,8 @@ export default function MyTeam() {
 
                   </>
               }
+
+
 
             </  > :
             <>

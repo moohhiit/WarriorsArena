@@ -3,10 +3,11 @@ import React, { useContext, useEffect, useState } from 'react'
 import { AuthContext, DataContext } from '../../Context/ContextConection';
 import firestore from '@react-native-firebase/firestore';
 import Icon, { Icons } from '../Icons';
-
+import CheckBox from '@react-native-community/checkbox';
 
 export default function CreateTeamModal({ visible, onClose, users, loading, error }) {
   try {
+    const [isChecked, setIsChecked] = useState(false);
     const { PlayerData, CreateTeamInServer } = useContext(DataContext)
     const [inputData, setInputsData] = useState({
       teamName: teamName,
@@ -14,29 +15,20 @@ export default function CreateTeamModal({ visible, onClose, users, loading, erro
       TeamID,
       teamGameHistory: [],
       game: "FreeFire",
-      teamMembers: playerList
+      teamMembers: [{ id: PlayerData.playerAppID, name: PlayerData.displayName }],
+      WinMatch: 0,
+      teamPlayerRequest: [],
+      teamplayerId : [PlayerData.playerAppID]
     })
-
-    const [playerList, setplayerlist] = useState([
-      { id: PlayerData.playerAppID, name: PlayerData.displayName },
-    ])
     const [isplayerExists, setisPlayerExist] = useState(false)
-    const [playerid, setplyerid] = useState(null)
     const [teamName, setTeamName] = useState('')
     const [TeamID, setTeamID] = useState('');
     const [documentExists, setDocumentExists] = useState(null);
-
     const [playerNameExist, sePlayerNameExist] = useState(false)
-
     const [errors, setErrors] = React.useState({});
     const [refresh, setrefresh] = useState(false)
 
-    const [checked, setChecked] = useState(null);
 
-    const handleCheck = (box) => {
-      setChecked(box);
-      handleOnchange(box, 'game')
-    };
     const handleOnchange = (text, input) => {
       setInputsData(prevState => ({ ...prevState, [input]: text }));
     };
@@ -45,19 +37,25 @@ export default function CreateTeamModal({ visible, onClose, users, loading, erro
     };
 
     const createTeam = (data) => {
-      const {   game, TeamID } = data
+      const {TeamID } = data
       try {
-        if (teamName != null && documentExists != true && TeamID != '' && playerList.length == 4) {
+        if (teamName != null && documentExists != true && TeamID != '' && isChecked) {
+          console.log(data)
           setrefresh(true)
           CreateTeamInServer(data)
           setTimeout(() => {
             setrefresh(false)
+            setTeamID('')
+            setTeamName('')
+            setIsChecked(false)
             onClose()
           }, 4000);
         }
         else {
-          console.log(teamName, documentExists, TeamID, playerList)
-          Alert.alert("SomeThing You Miss ", ' Check all field are Correct')
+
+
+
+          Alert.alert("SomeThing You Miss ", ' Check all field are filled')
         }
       } catch (error) {
         console.log(error)
@@ -65,54 +63,6 @@ export default function CreateTeamModal({ visible, onClose, users, loading, erro
 
 
     }
-
-    useEffect(() => {
-      handleOnchange(playerList, 'teamMembers')
-    }, [playerList])
-
-    const AddPlayerinlist = (pai, pn) => {
-      // Check if both item name and price are provided
-      if (playerid.trim() !== '' && playerid != PlayerData.playerAppID && playerList.length < 4) {
-        // Add the item to the list
-        setplayerlist([...playerList, { id: playerid, name: isplayerExists.displayName }]);
-        // Clear input fields
-        setplyerid('');
-      }
-    };
-
-
-
-    useEffect(() => {
-      const CheckPlayerAvilable = async () => {
-        const id = Number.parseInt(playerid)
-        try {
-          const querySnapshot = await firestore()
-            .collection('playerInfo')
-            .where('playerAppID', '==', id)
-            .get()
-          if (!querySnapshot.empty) {
-            querySnapshot.forEach((doc) => {
-              let pd = doc.data()
-              setisPlayerExist(pd)
-            })
-            // return true; // User exists
-          } else {
-            setisPlayerExist(false)
-            // return false; // User does not exist
-          }
-
-
-        } catch (error) {
-          console.error('Error checking user availability:', error);
-          setisPlayerExist(false)
-          // return false; // Return false in case of error
-        }
-
-      }
-      CheckPlayerAvilable()
-    }, [playerid])
-
-
     useEffect(() => {
       const CheckPlayerAvilable = async () => {
         try {
@@ -165,20 +115,20 @@ export default function CreateTeamModal({ visible, onClose, users, loading, erro
     }, [TeamID]);
 
     return (
-      <Modal visible={visible} transparent={true} animationType="slide">
+      <Modal visible={visible} transparent={true} animationType="slide"  >
 
-        <ScrollView style={styles.modalView}>
-          <Text style={{ alignSelf: 'center', color: 'black', fontSize: 25, fontWeight: 'bold', margin: 15 }}>Create Team</Text>
+        <ScrollView style={styles.modalView}  >
+          <Text style={{ alignSelf: 'center', color: 'gold', fontSize: 25, fontWeight: 'bold', margin: 15 }}>Create Team</Text>
           <View style={{ gap: 20 }} >
 
             <View style={{ justifyContent: 'space-around', flexDirection: 'row' }} >
-              <Text style={{ color: 'black', alignSelf: 'center', flex: 2 }} >
-                Team ID
+              <Text style={{ color: 'white', alignSelf: 'center', flex: 2, fontSize: 18, fontWeight: 'bold' }} >
+                Team id  :
               </Text>
               <TextInput
                 style={[styles.input, { borderColor: documentExists ? 'red' : 'black' }]}
-                placeholder="Enter Team ID"
-                placeholderTextColor='black'
+                placeholder="Enter here"
+                placeholderTextColor='white'
                 inputMode='numeric'
                 maxLength={5}
                 value={TeamID}
@@ -194,13 +144,13 @@ export default function CreateTeamModal({ visible, onClose, users, loading, erro
 
             </View>
             <View style={{ flexDirection: 'row' }} >
-              <Text style={{ color: 'black', alignSelf: 'center', flex: 2 }} >
-                Team Name :
+              <Text style={{ color: 'white', alignSelf: 'center', flex: 2, fontSize: 18, fontWeight: 'bold' }} >
+                Team Name  :
               </Text>
               <TextInput
                 style={[styles.input, { borderColor: playerNameExist ? 'red' : 'black' }]}
                 placeholder="Enter your name"
-                placeholderTextColor='black'
+                placeholderTextColor='white'
                 value={PlayerData.playerAppID}
                 onChangeText={(text) => {
                   if (!isplayerExists) {
@@ -214,102 +164,79 @@ export default function CreateTeamModal({ visible, onClose, users, loading, erro
             </View  >
 
           </View>
-          {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 20, marginBottom: 0 }} >
-            <TouchableOpacity
-              style={styles.checkboxContainer}
-              onPress={() => handleCheck('Free Fire')}
-            >
-              <View style={styles.checkbox}>
-                {checked === 'Free Fire' && <View style={styles.checkedBox} />}
-              </View>
-              <Text style={{ color: 'black', fontSize: 18, }}>Free Fire</Text>
-            </TouchableOpacity>
+          <View style={{ padding: 10 }} >
+            <View style={styles.ruleContainer}>
+              <Text style={styles.ruleTitle}>1. Team Size</Text>
+              <Text style={styles.ruleDescription}>
+                Each team must have a minimum of 4 players and a maximum of 5 players.
+              </Text>
+            </View>
+            <View style={styles.ruleContainer}>
+              <Text style={styles.ruleTitle}>2. Team Name and Identity</Text>
+              <Text style={styles.ruleDescription}>
+                Each team must choose a unique name to represent them.
+              </Text>
+            </View>
 
-            <TouchableOpacity
-              style={styles.checkboxContainer}
-              onPress={() => handleCheck('BGMI')}
-            >
-              <View style={styles.checkbox}>
-                {checked === 'BGMI' && <View style={styles.checkedBox} />}
-              </View>
-              <Text style={{ color: 'black', fontSize: 18, }}>BGMI</Text>
-            </TouchableOpacity>
-          </View> */}
-          <Text style={{ color: 'black', fontSize: 20, alignSelf: "center", marginVertical: 20 }} >
-            Player Id
-          </Text>
-          <View style={{ gap: 10 }} >
-            {
-              playerList.map((e, i) => {
-                return (
-                  <View style={{ flexDirection: 'row', justifyContent: "space-around", }} key={i} >
+            <View style={styles.ruleContainer}>
+              <Text style={styles.ruleTitle}>3. Balanced Gameplay</Text>
+              <Text style={styles.ruleDescription}>
+                Teams will be adjusted automatically, if needed, to ensure fair gameplay based on player levels or skills.
+              </Text>
+            </View>
 
-                    <Text style={{ color: 'black' }} >
-                      
-                      Player ID :  {e ? e.id : null}
-                    </Text>
-                    <Text style={{ color: 'black' }} >
-                      Name :  {e ? e.name : null}
-                    </Text>
-                  </View>
-                )
-              })
-            }
-
+            <View style={styles.ruleContainer}>
+              <Text style={styles.ruleTitle}>4. Role Selection</Text>
+              <Text style={styles.ruleDescription}>
+                Players can select roles like attacker, defender, or healer to create a diverse team. Roles will be auto-assigned if not selected.
+              </Text>
+            </View>
+            <View style={styles.ruleContainer}>
+              <Text style={styles.ruleTitle}>5. Game Mode-Specific Rules</Text>
+              <Text style={styles.ruleDescription}>
+                Additional rules may apply for certain game modes . These will be outlined before the match.
+              </Text>
+            </View>
+            <View style={styles.ruleContainer}>
+              <Text style={styles.ruleTitle}>5. Suspended</Text>
+              <Text style={styles.ruleDescription}>
+                If a Team is inactive for more than 2 match , team  will be placed in Suspended Mode. If Any hack is used then team is permanently Suspended.
+              </Text>
+            </View>
           </View>
-          <View style={{ flexDirection: 'row', gap: 10, margin: 10 }} >
-            <Text style={{ color: 'black', alignSelf: 'center', flex: 1.5 }} >
-              Player ID :
-            </Text>
-            <TextInput
-              placeholder="Enter Player ID"
-              placeholderTextColor='black'
-              value={playerid}
-              onChangeText={setplyerid}
-              style={styles.input}
+          <View style={{ flexDirection: 'row', alignItems: 'center' }} >
+            <CheckBox
+              value={isChecked}
+              onValueChange={setIsChecked}
             />
-            {
-              isplayerExists != false ? <TouchableOpacity style={{ alignSelf: 'center' }}
-                onPress={AddPlayerinlist}
-
-              >
-                <Icon type={Icons.Ionicons} name='checkmark-done-circle' color='green' size={35} />
-              </TouchableOpacity> : null
-            }
-
+            <Text>
+              I have read and accept all the rules.
+            </Text>
           </View>
-
-
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={{ backgroundColor: 'red', padding: 10, borderRadius: 10 }}
               onPress={() => {
                 onClose()
-                setChecked(null)
-                setplayerlist([
-                  { id: PlayerData.playerAppID, name: PlayerData.displayName },
-                ])
-
+                setTeamName('')
+                setTeamID('')
+                setIsChecked(false)
 
               }
               }
             >
               <Text style={{ fontWeight: 'bold', color: 'white' }} >
-                Cancel
+                Close
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={{ backgroundColor: '#3795BD', padding: 10, borderRadius: 10 }}
+            <TouchableOpacity style={{ backgroundColor: 'gold', padding: 10, borderRadius: 10 }}
               onPress={() => {
                 setDocumentExists(false)
                 sePlayerNameExist(false)
                 createTeam(inputData)
-                onClose()
-                setChecked(null)
-                setplayerlist([
-                  { id: PlayerData.playerAppID, name: PlayerData.displayName },
-                ])
+
               }}
             >
-              {refresh ? <ActivityIndicator size="small" color="#0000ff" /> : <Text style={{ fontWeight: 'bold', color: 'white' }} >
+              {refresh ? <ActivityIndicator size="small" color="gold" /> : <Text style={{ fontWeight: 'bold', color: 'black' }} >
                 Create Team
               </Text>}
 
@@ -329,10 +256,10 @@ const styles = StyleSheet.create({
 
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: 'black',
     borderRadius: 20,
-    padding: 20,
-    shadowColor: '#000',
+    paddingHorizontal: 20,
+    shadowColor: 'white',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -342,6 +269,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalText: {
+    color: 'white',
     marginBottom: 15,
     textAlign: 'center',
     fontSize: 18,
@@ -355,7 +283,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 10,
     alignSelf: 'center',
-    color: 'black',
+    color: 'white',
     justifyContent: 'center'
 
   },
@@ -363,7 +291,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    marginTop: 10
+    marginTop: 10,
+    paddingBottom: 20
   },
   checkboxContainer: {
     flexDirection: 'row',
@@ -377,6 +306,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 10,
+  },
+  ruleContainer: {
+    marginBottom: 15,
+  },
+  ruleTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  ruleDescription: {
+    fontSize: 16,
+    color: 'white',
+    marginTop: 5,
+    lineHeight: 22,
+    fontWeight: 'thin'
   },
   checkedBox: {
     width: 12,

@@ -5,12 +5,18 @@ import Icon, { Icons } from './Icons';
 
 export default function TeamDetail({ route }) {
   const { ID } = route.params;
-  const { getDetailFromServer, PlayerData, removePlyerFromTeam, featchDetail } = useContext(DataContext)
+  const {
+    getDetailFromServer,
+    PlayerData,
+    removePlyerFromTeam,
+    featchDetail,
+    enrolled,
+    findEnrolement } = useContext(DataContext)
   const [teamDetail, setteamDetail] = useState(null)
   const [editMode, setEditMode] = useState(false)
   const [newPlayerList, setnewPlyerlist] = useState([])
   const [matchHistory, setmatchHistory] = useState([])
-
+  const [ec, setEc] = useState(false)
   const height = Dimensions.get('screen').height
 
   const enableedit = () => {
@@ -57,11 +63,42 @@ export default function TeamDetail({ route }) {
 
     }
   }
+  const Enrollemnt = async () => {
+    if (teamDetail.teamMembers.length != 4) {
+      Alert.alert(
+        "Insufficient Players",
+        "Your Player is less than 4",
+        [
+
+          {
+            text: "OK",
+          },
+        ],
+        { cancelable: true }
+      );
+    }
+    else {
+      const Enrollemntdata = {
+        game: "Free Fire",
+        team: ID,
+        teamName: teamDetail.teamName
+      }
+      enrolled(Enrollemntdata)
+    }
+
+  }
+  const checkenroled = async () => {
+    let ec = await findEnrolement(ID)
+    setEc(ec)
+    console.log(ec)
+  }
+
   useEffect(() => {
     getteammatchDetail()
   }, [teamDetail])
   useEffect(() => {
     getTeamDetail()
+    checkenroled()
   }, [])
 
   return (
@@ -139,10 +176,23 @@ export default function TeamDetail({ route }) {
                 })
               }
             </View>
+            {
+              teamDetail.teamLeader == PlayerData.playerAppID ? ec ? <Text
+                style={{ color: "lightgreen", fontSize: 18, margin: 10 }}
+              >
+                Your Team is Enrolled
+              </Text> :
+                <TouchableOpacity style={{ backgroundColor: 'green', padding: 5, borderRadius: 5, margin: 10 }} onPress={Enrollemnt} >
+                  <Text style={{ color: 'black', fontSize: 20, alignSelf: 'center', fontWeight: 'bold' }} >
+                    Enrollment
+                  </Text>
+                </TouchableOpacity> : null
+            }
+
             <View>
               <View style={{ backgroundColor: 'gold', padding: 5, borderRadius: 5 }}  >
                 <Text style={{ color: 'black', fontSize: 20, alignSelf: 'center', fontWeight: 'bold' }} >
-                  Match List
+                  Match History
                 </Text>
               </View>
               <FlatList
