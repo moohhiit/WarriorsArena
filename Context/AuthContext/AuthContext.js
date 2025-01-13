@@ -79,7 +79,8 @@ export default function AuthState({ children }) {
                         playerAppID: randomNumber,
                         teamRequest:[],
                         TeamDeatile:[],
-                        matchhistory:[]
+                        matchhistory:[],
+                        coinCollection:0
                     });
 
 

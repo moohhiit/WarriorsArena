@@ -1,7 +1,8 @@
-import { View, Text, Dimensions, FlatList, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, Dimensions, FlatList, TouchableOpacity, Alert, StyleSheet, Modal } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import { DataContext } from '../Context/ContextConection';
 import Icon, { Icons } from './Icons';
+import firestore from '@react-native-firebase/firestore';
 
 export default function TeamDetail({ route }) {
   const { ID } = route.params;
@@ -11,13 +12,32 @@ export default function TeamDetail({ route }) {
     removePlyerFromTeam,
     featchDetail,
     enrolled,
-    findEnrolement } = useContext(DataContext)
+    findEnrolement,
+    handleAcceptplayer,
+    handleDenyplayer } = useContext(DataContext)
   const [teamDetail, setteamDetail] = useState(null)
   const [editMode, setEditMode] = useState(false)
   const [newPlayerList, setnewPlyerlist] = useState([])
   const [matchHistory, setmatchHistory] = useState([])
+  const [modalVisible, setModalVisible] = useState(false);
+
   const [ec, setEc] = useState(false)
+
+
+
   const height = Dimensions.get('screen').height
+
+
+  const handleAccept = () => {
+    setModalVisible(false);
+    console.log('Request Accepted');
+  };
+
+  const handleDeny = () => {
+    setModalVisible(false);
+    console.log('Request Denied');
+  };
+
 
   const enableedit = () => {
     setEditMode(!editMode)
@@ -94,6 +114,18 @@ export default function TeamDetail({ route }) {
   }
 
   useEffect(() => {
+    const unsubscribe = firestore()
+      .collection('PlayerTeams')
+      .doc(ID)
+      .onSnapshot((snapshot) => {
+        setteamDetail(snapshot.data())
+      });
+
+    return () => unsubscribe();
+  }, [])
+
+
+  useEffect(() => {
     getteammatchDetail()
   }, [teamDetail])
   useEffect(() => {
@@ -107,13 +139,71 @@ export default function TeamDetail({ route }) {
       {
         teamDetail ?
           <>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => setModalVisible(false)} // Handles back button close
+            >
+              <View style={styles.modalOverlay}>
+                <View style={styles.modalContainer}>
+                  <Text style={styles.modalTitle}>Request Confirmation</Text>
+                  {
+                    teamDetail.teamPlayerRequest ? teamDetail.teamPlayerRequest.map((_a, i) => {
+                      return (
+                        <View key={i} style={{ borderRadius: 10, borderWidth: 1, padding: 10, width: '100%' }}  >
+                          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}  >
+                            <View >
+                              <Text style={{ fontWeight: 'bold', fontSize: 18, color: 'black' }} >
+                                {_a.playerName}
+                              </Text>
+                              <Text style={{ fontSize: 12, color: 'black' }} >
+                                {_a.playerId}
+                              </Text>
+                            </View>
+
+
+                            <TouchableOpacity style={[styles.button, styles.acceptButton]} onPress={() => {
+                              const playerData = {
+                                id: _a.playerId,
+                                name: _a.playerName
+                              }
+                              handleAcceptplayer(teamDetail.TeamID, playerData, teamDetail.teamPlayerRequest, _a.playerId)
+                              setModalVisible(false)
+                            }}>
+                              <Text style={styles.buttonText}>Accept</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={[styles.button, styles.denyButton]} onPress={() => {
+                              const playerData = {
+                                id: _a.playerId,
+                                name: _a.playerName
+                              }
+                              handleDenyplayer(teamDetail.TeamID, playerData, teamDetail.teamPlayerRequest, _a.playerId)
+                              setModalVisible(false)
+                            }}>
+                              <Text style={styles.buttonText}>Deny</Text>
+                            </TouchableOpacity>
+
+                          </View>
+                        </View>
+                      )
+                    }) : null
+                  }
+
+
+                </View>
+              </View>
+            </Modal>
             <View style={{ justifyContent: "flex-end", backgroundColor: 'black', height: 100, borderBottomEndRadius: 20, borderBottomLeftRadius: 20, borderBottomColor: "gold", borderWidth: 3, padding: 10 }} >
               <Text style={{ color: 'gold', fontSize: 20, alignSelf: 'center', }} >{teamDetail.teamName}</Text>
             </View>
             <View style={{ padding: 20 }} >
 
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }} >
-                <TouchableOpacity style={{ padding: 10, backgroundColor: 'gold', borderRadius: 10, flexDirection: 'row', gap: 10, alignItems: 'center' }} >
+                <TouchableOpacity style={{ padding: 10, backgroundColor: 'gold', borderRadius: 10, flexDirection: 'row', gap: 10, alignItems: 'center' }}
+                  onPress={() => setModalVisible(true)}
+                >
                   <Text style={{ color: 'black', fontWeight: "bold", fontSize: 20 }}  >Requests </Text>
                   <Icon type={Icons.Fontisto} name='persons' color='black' size={20} />
                 </TouchableOpacity>
@@ -235,3 +325,71 @@ export default function TeamDetail({ route }) {
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  openButton: {
+    backgroundColor: '#007BFF',
+    padding: 15,
+    borderRadius: 8,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: 300,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 10,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: 'black'
+  },
+  modalMessage: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  buttonGroup: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  button: {
+    flex: 1,
+    padding: 5,
+    borderRadius: 5,
+    marginHorizontal: 5,
+    alignItems: 'center',
+
+  },
+  acceptButton: {
+    backgroundColor: '#4CAF50',
+  },
+  denyButton: {
+    backgroundColor: '#f44336',
+  },
+});

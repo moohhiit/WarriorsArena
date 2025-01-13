@@ -14,13 +14,20 @@ export default function FreeFireSchedule() {
 
 
   const HIGHT = Dimensions.get('screen').height
+  const getCurrentDate = () => {
+    const date = new Date(); // Get the current date
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  };
 
   const FeatchMatchdetail = async (d) => {
 
 
     setrefreshing(true)
     try {
-
       const Preomise = d.map(async (e) => {
         const S_ = await firestore().collection('gameData').doc(e).get()
         return S_.data()
@@ -36,8 +43,6 @@ export default function FreeFireSchedule() {
       setrefreshing(false)
     }
   }
-
-
   function sortByTime(objList) {
     const parseTime = (timeStr) => {
       const [time, modifier] = timeStr.split(" ");
@@ -57,6 +62,28 @@ export default function FreeFireSchedule() {
     return objList.sort((a, b) => parseTime(a.MatchTime) - parseTime(b.MatchTime));
   }
 
+  useEffect(() => {
+    const collectionRef = firestore().collection("gameData"); 
+
+    const currentdata = getCurrentDate()
+    const unsubscribe = collectionRef
+      .where("MatchDate", "==", currentdata) 
+      .onSnapshot(
+        (querySnapshot) => {
+          const docsArray = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setMatchDetail(docsArray); 
+        },
+        (error) => {
+          console.error("Error listening to real-time updates:", error);
+        }
+      );
+
+    return () => unsubscribe();
+  }, []);
+
 
   useEffect(() => {
     const sortedObjects = sortByTime(matchDetail);
@@ -65,12 +92,8 @@ export default function FreeFireSchedule() {
   }, [matchDetail])
 
 
-  useEffect(() => {
-    if (freeFireScheduleSquard) {
 
-      FeatchMatchdetail(freeFireScheduleSquard)
-    }
-  }, [freeFireScheduleSquard])
+
 
   const matchboxdetail = ({ item }) => {
     try {
@@ -80,7 +103,7 @@ export default function FreeFireSchedule() {
         <View style={{ margin: 10, borderBottomWidth: .5, padding: 5, borderColor: 'gold' }} >
           <View style={{ backgroundColor: '#4B70F5', flexDirection: "row", justifyContent: 'space-between', padding: 5, borderRadius: 5 }} >
             <Text style={{ color: 'white', fontWeight: 'bold' }} >#{item.MatchId}</Text>
-            <View style={{flexDirection:'row' , alignItems:'center' , gap:5}} >
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }} >
 
 
               {item.status == "Live" ?
@@ -90,8 +113,8 @@ export default function FreeFireSchedule() {
                     {item.status}
                   </Text>
                 </> : <Text style={{ color: 'white', fontWeight: 'bold' }} >
-                    {item.status}
-                  </Text>}
+                  {item.status}
+                </Text>}
 
             </View>
             <Text style={{ color: 'white', fontWeight: 'bold' }} >{item.MatchTime}</Text>
@@ -123,8 +146,7 @@ export default function FreeFireSchedule() {
                   : null
               }
               <Text style={{ color: 'lightgreen', marginHorizontal: 10 }} >
-
-                Your team is in this game, you will get  password 5 minutes before the start of the game.
+                Your team is participating in this game. You will receive the password 5 minutes before the game begins.
               </Text>
             </View>
             : null}
@@ -142,7 +164,7 @@ export default function FreeFireSchedule() {
   return (
     <View style={{ backgroundColor: 'black', height: HIGHT }} >
       <FlatList
-        onRefresh={() => { FeatchMatchdetail(freeFireScheduleSquard) }}
+        onRefresh={() => { console.log('refresh') }}
         refreshing={refreshing}
         data={flietlist}
         renderItem={matchboxdetail}

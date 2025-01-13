@@ -12,7 +12,7 @@ export const ScreensArray = [
   { route: 'Free Fire India', label: 'Free Fire India', type: Icons.MaterialCommunityIcons, icon: 'gamepad', component: FreeFireScreen, notification: 3, },
   // { route: 'BGMI', label: 'BGMI', type: Icons.MaterialCommunityIcons, icon: 'gamepad', component: BGMIScreen, notification: 4, },
   { route: 'Team', label: 'My Team', type: Icons.FontAwesome, icon: 'group', component: MyTeam, notification: 0, },
-  { route: 'Game', label: 'My Activity', type: Icons.FontAwesome, icon: 'gamepad', component: MyActivities, notification: 2, },
+  // { route: 'Game', label: 'My Activity', type: Icons.FontAwesome, icon: 'gamepad', component: MyActivities, notification: 2, },
 ];
 
 const signOut = () => {

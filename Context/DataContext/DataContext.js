@@ -80,7 +80,7 @@ export default function DataState({ children }) {
             console.error('Error fetching documents: ', error);
         }
     };
-
+  
     const feacthPlayerdetail = async (uid) => {
 
         const PlayerData = await firestore().collection('playerInfo').doc(uid).get()
@@ -92,33 +92,30 @@ export default function DataState({ children }) {
         return array.filter(element => element[property] !== value);
     };
 
-    const removePlyerFromTeam = async (docId, arrayField, idToRemove) => {
+    const handleDenyplayer = async (Teamid , ReqPlayeData , Arrayofreq , requestplayerId) => {
         try {
-            const docRef = firestore().collection('PlayerTeams').doc(docId);
-            const doc = await docRef.get();
-            if (doc.exists) {
-                const data = doc.data();
-                const array = data[arrayField] || [];
-                const updatedArray = array.filter(item => item.id !== idToRemove);
-                await docRef.update({
-                    [arrayField]: updatedArray,
-                });
-                console.log('Object removed based on id successfully');
-            } else {
-                console.error('Document does not exist');
-            }
+            let docReaf = firestore().collection('PlayerTeams').doc(Teamid)
+            let updatearry = removeElementFromArray(Arrayofreq, 'playerId', requestplayerId)
+            docReaf.update({
+                teamPlayerRequest: updatearry,
+                PastRequestonTeam : firestore.FieldValue.arrayRemove(requestplayerId)
+            }).then(() => {
+                console.log('team Deny')
+            })
         } catch (error) {
-            console.error('Error removing object by id:', error);
+            console.log(error)
         }
     };
 
-    const AcceptTeam = async (teamId) => {
+    const handleAcceptplayer = async (Teamid , ReqPlayeData , Arrayofreq , requestplayerId) => {
         try {
-            let docReaf = firestore().collection('playerInfo').doc(userLoginDetail.uid)
-            let updatearry = removeElementFromArray(PlayerData.teamRequest, 'teamId', teamId)
+            let docReaf = firestore().collection('PlayerTeams').doc(Teamid)
+            let updatearry = removeElementFromArray(Arrayofreq, 'playerId', requestplayerId)
+            console.log(updatearry)
             docReaf.update({
-                TeamDeatile: firestore.FieldValue.arrayUnion(teamId),
-                teamRequest: updatearry
+                teamMembers: firestore.FieldValue.arrayUnion(ReqPlayeData),
+                teamPlayerRequest: updatearry,
+                PastRequestonTeam : firestore.FieldValue.arrayRemove(requestplayerId)
             }).then(() => {
                 console.log('team Accept')
             })
@@ -367,12 +364,12 @@ export default function DataState({ children }) {
             BGMICrimageUrl,
             FFCrimageUrl,
             FFBrimageUrl,
-            AcceptTeam,
+            handleAcceptplayer,
             rejctteam,
             enrolled,
             getDetailFromServer,
             UpdateGameUid,
-            removePlyerFromTeam,
+            handleDenyplayer,
             findEnrolement
         }} >
             {children}

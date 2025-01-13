@@ -6,8 +6,9 @@ import firestore from '@react-native-firebase/firestore';
 
 export default function TeamRequestModal({ visible, onClose, users, loading, error, teamrequestDetail }) {
     try {
-        const [query, setQuery] = useState(''); 
-        const [results, setResults] = useState([]); 
+        const { PlayerData } = useContext(DataContext)
+        const [query, setQuery] = useState('');
+        const [results, setResults] = useState([]);
         const [loading, setLoading] = useState(false);
 
         useEffect(() => {
@@ -18,12 +19,25 @@ export default function TeamRequestModal({ visible, onClose, users, loading, err
 
             const debounceTimer = setTimeout(() => {
                 performSearch(query);
-            }, 300); 
+            }, 300);
 
             return () => clearTimeout(debounceTimer);
         }, [query]);
 
-      
+
+        const sendRequest = async (id, data, platerid) => {
+            const firref = firestore().collection('PlayerTeams').doc(id)
+            try {
+                await firref.update({
+                    teamPlayerRequest: firestore.FieldValue.arrayUnion(data),
+                    PastRequestonTeam: firestore.FieldValue.arrayUnion(platerid),
+                });
+                console.log('Value added to array');
+            } catch (error) {
+                console.error('Error updating document: ', error);
+            }
+        }
+
         const performSearch = async (text) => {
             setLoading(true);
             try {
@@ -51,14 +65,15 @@ export default function TeamRequestModal({ visible, onClose, users, loading, err
             <Modal visible={visible} transparent={true} animationType="slide">
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
-                       
+
                         <TouchableOpacity
                             style={styles.closeButton}
                             onPress={() => {
                                 setQuery('')
-                                onClose()}}
+                                onClose()
+                            }}
                         >
-                        <Icon type={Icons.AntDesign} name='closecircleo' color='white' />
+                            <Icon type={Icons.AntDesign} name='closecircleo' color='white' />
                         </TouchableOpacity>
 
                         {/* Search Input */}
@@ -73,12 +88,34 @@ export default function TeamRequestModal({ visible, onClose, users, loading, err
                                 data={results}
                                 keyExtractor={(item) => item.id}
                                 renderItem={({ item }) => (
-                                    <View style={[styles.resultItem, { backgroundColor: '#7A1CAC', borderRadius: 10, marginHorizontal: 10, flexDirection: 'row', justifyContent: 'space-between', padding: 10 }]}>
+                                    <View style={[styles.resultItem, { backgroundColor: '#7A1CAC', borderRadius: 10, marginHorizontal: 10, flexDirection: 'row', justifyContent: 'space-between', padding: 10, marginVertical: 5 }]}>
                                         <Text style={styles.resultSubText}> #{item.id}</Text>
                                         <Text style={styles.resultSubText}>{item.teamName}</Text>
-                                        <TouchableOpacity>
-                                            <Icon type={Icons.AntDesign} name='addusergroup' color='white' />
-                                        </TouchableOpacity>
+                                        {
+                                            item.PastRequestonTeam ? item.PastRequestonTeam.includes(PlayerData.playerAppID) ? <Icon type={Icons.MaterialIcons} name='cloud-done' color='lightgreen' /> : <TouchableOpacity
+                                                onPress={() => {
+                                                    const data = {
+                                                        playerName: PlayerData.displayName,
+                                                        playerId: PlayerData.playerAppID
+                                                    }
+                                                    sendRequest(item.id, data, PlayerData.playerAppID)
+                                                }}
+                                            >
+                                                <Icon type={Icons.AntDesign} name='addusergroup' color='white' />
+                                            </TouchableOpacity> : <TouchableOpacity
+                                                onPress={() => {
+                                                    const data = {
+                                                        playerName: PlayerData.displayName,
+                                                        playerId: PlayerData.playerAppID
+                                                    }
+                                                    sendRequest(item.id, data, PlayerData.playerAppID)
+                                                    onClose()
+                                                }}
+                                            >
+                                                <Icon type={Icons.AntDesign} name='addusergroup' color='white' />
+                                            </TouchableOpacity>
+                                        }
+
                                     </View>
                                 )}
                             />
