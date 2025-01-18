@@ -74,7 +74,7 @@ export default function MyTeam() {
 
                     <Icon type={Icons.AntDesign} name='search1' color='black' size={30} />
                     <Text style={{ fontWeight: 1, fontSize: 18, alignSelf: 'center', color: 'black' }}  >
-                      Teams
+                      Request Team
                     </Text>
 
                   </View>
@@ -180,8 +180,12 @@ export default function MyTeam() {
                   </>
                   :
                   <>
-                    <ActivityIndicator size="large" color="#00ff00" />
-
+                    <LottieView
+                      source={require('../assert/Team.json')}
+                      style={{ height: 500 }}
+                      autoPlay
+                      loop
+                    />
                   </>
               }
 

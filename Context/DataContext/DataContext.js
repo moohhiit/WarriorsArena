@@ -77,7 +77,7 @@ export default function DataState({ children }) {
                 setTeamList(null)
             }
         } catch (error) {
-            console.error('Error fetching documents: ', error);
+            console.log('Error fetching documents');
         }
     };
   
@@ -103,7 +103,7 @@ export default function DataState({ children }) {
                 console.log('team Deny')
             })
         } catch (error) {
-            console.log(error)
+            console.worn("Error Handled")
         }
     };
 

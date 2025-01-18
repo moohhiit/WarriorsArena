@@ -7,11 +7,14 @@ import MyTeam from "../../Screens/MyTeam";
 import MyActivities from "../../Screens/MyActivities";
 import auth from "@react-native-firebase/auth";
 import { DevSettings } from 'react-native';
+import WawShop from "../../Screens/WawShop";
 
 export const ScreensArray = [
   { route: 'Free Fire India', label: 'Free Fire India', type: Icons.MaterialCommunityIcons, icon: 'gamepad', component: FreeFireScreen, notification: 3, },
   // { route: 'BGMI', label: 'BGMI', type: Icons.MaterialCommunityIcons, icon: 'gamepad', component: BGMIScreen, notification: 4, },
   { route: 'Team', label: 'My Team', type: Icons.FontAwesome, icon: 'group', component: MyTeam, notification: 0, },
+  { route: 'WawShop', label: 'Waw Shop', type: Icons.FontAwesome, icon: 'shopping-cart', component: WawShop, notification: 0, },
+  { route: 'Rewords', label: 'My Rewords', type: Icons.FontAwesome5, icon: 'crown', component: WawShop, notification: 0, },
   // { route: 'Game', label: 'My Activity', type: Icons.FontAwesome, icon: 'gamepad', component: MyActivities, notification: 2, },
 ];
 

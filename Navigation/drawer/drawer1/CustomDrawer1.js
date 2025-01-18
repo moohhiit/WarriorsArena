@@ -9,7 +9,7 @@ import DrawerItemList from './DrawerItemList'
 import { AuthContext, DataContext } from '../../../Context/ContextConection'
 import { useNavigation } from '@react-navigation/native'
 import GameDetail from '../../../Component/GameDetail'
-
+import { version } from '../../../package.json';
 
 const ProjectItem = ({
   label, type = Icons.Entypo, name = 'youtube',
@@ -110,7 +110,7 @@ const CustomDrawer1 = (props) => {
   return (
     <SafeAreaView style={styles.container}>
       {/* header */}
-      <Animated.View style={[styles.row, styles.view, styles.marginTop, viewStyles2('top') , {backgroundColor:'black' , alignItems:'center' ,paddingHorizontal:50}]}>
+      <Animated.View style={[styles.row, styles.view, styles.marginTop, viewStyles2('top'), { backgroundColor: 'black', alignItems: 'center', paddingHorizontal: 50 }]}>
         <Image style={{
           padding: constant.SPACING / 2.4,
           borderRadius: constant.borderRadius,
@@ -119,8 +119,8 @@ const CustomDrawer1 = (props) => {
           width: 30
         }} source={require('../../../Component/Coin.png')} >
         </Image>
-         <Text style={[styles.headerTitle , {alignSelf:'center'}]}>{PlayerData.coinCollection}</Text>
-       
+        <Text style={[styles.headerTitle, { alignSelf: 'center' }]}>{PlayerData ? PlayerData.coinCollection : 0}</Text>
+
       </Animated.View>
       {/* Drawer List Item */}
       <Animated.ScrollView
@@ -130,7 +130,7 @@ const CustomDrawer1 = (props) => {
         style={[styles.marginVertical, viewStyles]}>
         <DrawerItemList {...props} styles={styles} />
 
-        <GameDetail/>
+        <GameDetail />
         {/* 2nd menu */}
         <View style={[styles.view, styles.marginVertical]}>
           <Text style={{ color: 'gold' }} >Team Connection.... </Text>
@@ -189,7 +189,11 @@ const CustomDrawer1 = (props) => {
           {!initializing ?
             <View style={styles.textContainer}>
               <Text style={styles.headerTitle}>{PlayerData ? PlayerData.displayName : null}</Text>
-              <Text style={{ fontSize: 18, color: 'gold' }}>#{PlayerData ? PlayerData.playerAppID : null}</Text>
+              <View style={{flexDirection:'row' , gap:10}} >
+
+                <Text style={{ fontSize: 18, color: 'gold' }}>#{PlayerData ? PlayerData.playerAppID : null}</Text>
+                <Text style={{ fontSize: 15, color: 'gold' }}>v -{version}</Text>
+              </View>
             </View> :
             <Text style={[styles.headerTitle, { alignSelf: "center", fontWeight: "bold" }]}>Login!!</Text>
           }
@@ -226,7 +230,7 @@ const styles = StyleSheet.create({
     padding: constant.SPACING / 2,
     justifyContent: 'space-between',
     borderRadius: constant.borderRadius,
-    
+
   },
   row: {
     flexDirection: 'row',
