@@ -34,7 +34,7 @@ export default function DataState({ children }) {
             if (!querySnapshot.empty) {
                 return true
             } else {
-               return false
+                return false
             }
         } catch (error) {
             console.error('Error fetching documents: ', error);
@@ -80,7 +80,7 @@ export default function DataState({ children }) {
             console.log('Error fetching documents');
         }
     };
-  
+
     const feacthPlayerdetail = async (uid) => {
 
         const PlayerData = await firestore().collection('playerInfo').doc(uid).get()
@@ -92,13 +92,13 @@ export default function DataState({ children }) {
         return array.filter(element => element[property] !== value);
     };
 
-    const handleDenyplayer = async (Teamid , ReqPlayeData , Arrayofreq , requestplayerId) => {
+    const handleDenyplayer = async (Teamid, ReqPlayeData, Arrayofreq, requestplayerId) => {
         try {
             let docReaf = firestore().collection('PlayerTeams').doc(Teamid)
             let updatearry = removeElementFromArray(Arrayofreq, 'playerId', requestplayerId)
             docReaf.update({
                 teamPlayerRequest: updatearry,
-                PastRequestonTeam : firestore.FieldValue.arrayRemove(requestplayerId)
+                PastRequestonTeam: firestore.FieldValue.arrayRemove(requestplayerId)
             }).then(() => {
                 console.log('team Deny')
             })
@@ -107,7 +107,7 @@ export default function DataState({ children }) {
         }
     };
 
-    const handleAcceptplayer = async (Teamid , ReqPlayeData , Arrayofreq , requestplayerId) => {
+    const handleAcceptplayer = async (Teamid, ReqPlayeData, Arrayofreq, requestplayerId) => {
         try {
             let docReaf = firestore().collection('PlayerTeams').doc(Teamid)
             let updatearry = removeElementFromArray(Arrayofreq, 'playerId', requestplayerId)
@@ -115,7 +115,7 @@ export default function DataState({ children }) {
             docReaf.update({
                 teamMembers: firestore.FieldValue.arrayUnion(ReqPlayeData),
                 teamPlayerRequest: updatearry,
-                PastRequestonTeam : firestore.FieldValue.arrayRemove(requestplayerId)
+                PastRequestonTeam: firestore.FieldValue.arrayRemove(requestplayerId)
             }).then(() => {
                 console.log('team Accept')
             })
@@ -186,7 +186,27 @@ export default function DataState({ children }) {
 
 
     }
+    const getRealtimeDocUpdates = (collectionName, docId) => {
+        const unsubscribe = firestore()
+            .collection(collectionName)
+            .doc(docId)
+            .onSnapshot(
+                (docSnapshot) => {
+                    if (docSnapshot.exists) {
+                        const data = { id: docSnapshot.id, ...docSnapshot.data() }
+                        setPlayerData(data);
+                        console.log('Teaking snapshot')
+                    } else {
+                        console.warn('Document does not exist.');
+                    }
+                },
+                (error) => {
+                    console.error('Error fetching Firestore document updates:', error);
+                }
+            );
 
+        return unsubscribe;
+    };
     const enrolled = async (data) => {
         try {
             const docRef = await firestore().collection('enrolement').add(data)
@@ -238,7 +258,6 @@ export default function DataState({ children }) {
                     });
                 });
 
-                // Commit the batch
                 await batch.commit();
                 console.log('User details updated successfully');
 
@@ -302,10 +321,10 @@ export default function DataState({ children }) {
         getTeamlist()
     }, [PlayerData])
 
+
+
     useEffect(() => {
-        if (userLoginDetail) {
-            firestore().collection('playerInfo').doc(userLoginDetail.uid).onSnapshot(doc => { setPlayerData(doc.data()) });
-        }
+
         firestore().collection('BGMISchdeule').doc('BGMIbrTS').onSnapshot(doc => {
             setBGMISchdeuleSquardBr(doc.data().schedule)
             setBGMIBrimageUrl(doc.data().image)
@@ -335,18 +354,29 @@ export default function DataState({ children }) {
     }, [userLoginDetail])
 
 
-
-
-
     useEffect(() => {
-        if (userLoginDetail) {
-            firestore().collection('playerInfo').doc(userLoginDetail.uid).onSnapshot(doc => { setPlayerData(doc.data()) });
+        try {
+            const collectionName = 'playerInfo';
+            const docId = userLoginDetail.uid;
+
+            const unsubscribe = getRealtimeDocUpdates(collectionName, docId);
+
+            // Cleanup on unmount
+            return () => unsubscribe();
+        } catch (error) {
+            console.log("Error")
         }
-    }, [])
+
+    }, []);
+
+
+
+
 
     return (
         <DataContext.Provider value={{
             findDataInArray,
+            getRealtimeDocUpdates,
             TeamList,
             freeFireScheduleSquard,
             PlayerData,
