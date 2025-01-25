@@ -84,7 +84,8 @@ export default function DataState({ children }) {
     const feacthPlayerdetail = async (uid) => {
 
         const PlayerData = await firestore().collection('playerInfo').doc(uid).get()
-        setPlayerData(PlayerData.data())
+        const data = { id: PlayerData.id, ...PlayerData.data() }
+        setPlayerData(data)
         console.log('User detail Featchd')
 
     }
@@ -279,9 +280,8 @@ export default function DataState({ children }) {
     async function featchDetail(col, arrayofdoc) {
         try {
             const teamarray = [];
-            const usersRef = firestore().collection(col); // Assuming 'users' is your collection name
+            const usersRef = firestore().collection(col); 
 
-            // Fetch user data for each userId
             for (const id of arrayofdoc) {
                 const userDoc = await usersRef.doc(id).get();
                 if (userDoc.exists) {
@@ -296,7 +296,7 @@ export default function DataState({ children }) {
     }
 
     const UpdateGameUid = async (ffuid, BGMIuid) => {
-        await firestore().collection('playerInfo').doc(userLoginDetail.uid).update({ 'FFUID': ffuid, BGMIUID: BGMIuid })
+        await firestore().collection('playerInfo').doc(userLoginDetail.uid).update({ 'FFUID': ffuid })
     }
 
     useEffect(() => {
@@ -354,20 +354,35 @@ export default function DataState({ children }) {
     }, [userLoginDetail])
 
 
-    useEffect(() => {
-        try {
-            const collectionName = 'playerInfo';
-            const docId = userLoginDetail.uid;
+    // useEffect(() => {
+    //     try {
+    //         const collectionName = 'playerInfo';
+    //         const docId = userLoginDetail.uid;
 
-            const unsubscribe = getRealtimeDocUpdates(collectionName, docId);
+    //         const unsubscribe = firestore()
+    //             .collection(collectionName)
+    //             .doc(docId)
+    //             .onSnapshot(
+    //                 (docSnapshot) => {
+    //                     if (docSnapshot.exists) {
+    //                         const data = { id: docSnapshot.id, ...docSnapshot.data() }
+    //                         setPlayerData(data);
+    //                         console.log('Teaking snapshot')
+    //                     } else {
+    //                         console.warn('Document does not exist.');
+    //                     }
+    //                 },
+    //                 (error) => {
+    //                     console.error('Error fetching Firestore document updates:');
+    //                 }
+    //             );
 
-            // Cleanup on unmount
-            return () => unsubscribe();
-        } catch (error) {
-            console.log("Error")
-        }
+    //         return () => unsubscribe();
+    //     } catch (error) {
+    //         console.log("Error" , error)
+    //     }
 
-    }, []);
+    // }, []);
 
 
 

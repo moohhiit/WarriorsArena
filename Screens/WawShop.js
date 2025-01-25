@@ -6,7 +6,7 @@ import firestore from '@react-native-firebase/firestore';
 
 export default function WawShop() {
   const [buttonStates, setButtonStates] = useState({});
-  const { PlayerData } = useContext(DataContext)
+  const { PlayerData , feacthPlayerdetail} = useContext(DataContext)
   const array = [
     {
       _id: 1,
@@ -15,7 +15,9 @@ export default function WawShop() {
       _coincost: 100,
       _iconname: 'logo-google-playstore',
       _color: 'gold',
-      _currency: '₹'
+      _currency: '₹',
+      _reedeamCode:'',
+      _typeshort : 'GPRC'
     },
     {
       _id: 2,
@@ -24,7 +26,9 @@ export default function WawShop() {
       _coincost: 200,
       _iconname: 'logo-google-playstore',
       _color: 'gold',
-      _currency: '₹'
+      _currency: '₹',
+      _reedeamCode:'',
+      _typeshort : 'GPRC'
     },
     {
       _id: 3,
@@ -33,7 +37,9 @@ export default function WawShop() {
       _coincost: 300,
       _iconname: 'logo-google-playstore',
       _color: 'gold',
-      _currency: '₹'
+      _currency: '₹',
+      _reedeamCode:'',
+      _typeshort : 'GPRC'
     },
     {
       _id: 4,
@@ -42,7 +48,9 @@ export default function WawShop() {
       _coincost: 500,
       _iconname: 'logo-google-playstore',
       _color: 'gold',
-      _currency: '₹'
+      _currency: '₹',
+      _reedeamCode:'',
+      _typeshort : 'GPRC'
     },
 
     {
@@ -117,8 +125,10 @@ export default function WawShop() {
       })
 
       let docReaf = firestore().collection('rewordRequested')
-      docReaf.add({ ...data_, requestedPlayerID: PlayerData.playerAppID, _sussefullyclamed: '' }
+      docReaf.add({ ...data_, requestedPlayerID: PlayerData.playerAppID, _sussefullyclamed: ''  }
+
       ).then(() => {
+        feacthPlayerdetail(PlayerData.id)
         console.log('Successfully Requested ')
       })
     } catch (error) {
