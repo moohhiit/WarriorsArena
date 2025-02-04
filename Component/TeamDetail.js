@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { DataContext } from '../Context/ContextConection';
 import Icon, { Icons } from './Icons';
 import firestore from '@react-native-firebase/firestore';
+import { useNavigation } from '@react-navigation/native';
 
 export default function TeamDetail({ route }) {
   const { ID } = route.params;
@@ -26,17 +27,7 @@ export default function TeamDetail({ route }) {
 
 
   const height = Dimensions.get('screen').height
-
-
-  const handleAccept = () => {
-    setModalVisible(false);
-    console.log('Request Accepted');
-  };
-
-  const handleDeny = () => {
-    setModalVisible(false);
-    console.log('Request Denied');
-  };
+    const Navigation = useNavigation()
 
 
   const enableedit = () => {
@@ -46,7 +37,7 @@ export default function TeamDetail({ route }) {
   const removePlayer = async (id) => {
     setnewPlyerlist((plyer) => plyer.filter((p) => p.id !== id))
     console.log(newPlayerList)
-    await removePlyerFromTeam(ID, "teamMembers", id)
+    await removePlyerFromTeam(teamDetail.TeamID, teamDetail.teamMembers, id)
   }
 
   const confirmRemove = (id) => {
@@ -104,6 +95,7 @@ export default function TeamDetail({ route }) {
         teamName: teamDetail.teamName
       }
       enrolled(Enrollemntdata)
+      Navigation.navigate('Team')
     }
 
   }
@@ -179,7 +171,7 @@ export default function TeamDetail({ route }) {
                                 id: _a.playerId,
                                 name: _a.playerName
                               }
-                              handleDenyplayer(teamDetail.TeamID, playerData, teamDetail.teamPlayerRequest, _a.playerId)
+                              handleDenyplayer(teamDetail.TeamID, teamDetail.teamPlayerRequest, _a.playerId)
                               setModalVisible(false)
                             }}>
                               <Text style={styles.buttonText}>Deny</Text>

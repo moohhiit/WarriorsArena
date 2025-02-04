@@ -80,7 +80,8 @@ export default function AuthState({ children }) {
                         teamRequest:[],
                         TeamDeatile:[],
                         matchhistory:[],
-                        coinCollection:0
+                        coinCollection:0,
+                        _rewordhistory:[]
                     });
 
 

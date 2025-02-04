@@ -120,8 +120,11 @@ export default function WawShop() {
       console.log(PlayerData.id)
       const userDocRef = firestore().collection('playerInfo').doc(PlayerData.id)
       const coinsum = PlayerData.coinCollection - data_._coincost
+      const message = `You are requesting for ${data_._type}`
       userDocRef.update({
-        coinCollection: coinsum
+        coinCollection: coinsum,
+        _rewordhistory : firestore.FieldValue.arrayUnion(message)
+
       })
 
       let docReaf = firestore().collection('rewordRequested')
@@ -151,7 +154,6 @@ export default function WawShop() {
       }),
     ]).start(() => {
       handlepurchase(item);
-   
     });
   };
   const handlepurchase = (i) => {

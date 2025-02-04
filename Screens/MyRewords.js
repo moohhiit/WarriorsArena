@@ -1,4 +1,4 @@
-import { View, Text, Dimensions, TouchableOpacity, ScrollView, Image } from 'react-native'
+import { View, Text, Dimensions, TouchableOpacity, ScrollView, Image, FlatList } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import firestore from '@react-native-firebase/firestore';
 import { DataContext } from '../Context/ContextConection';
@@ -8,7 +8,7 @@ export default function MyRewords() {
   try {
     const [Unclaimedreword, setunclamidreword] = useState([])
     const [claimegamereword, setclaimdgarmreword] = useState([])
-
+    const [historyList, sethistoryList] = useState([])
     const { PlayerData, feacthPlayerdetail } = useContext(DataContext)
 
     const loadreword = async (col, fn, condition, id, callback) => {
@@ -78,7 +78,16 @@ export default function MyRewords() {
       }
     }
 
+    useEffect(() => {
+      try {
+        const List = PlayerData._rewordhistory
+        const reverseList = List.reverse();
+        sethistoryList(reverseList)
+      } catch (e) {
+        console.log("No history")
+      }
 
+    }, [PlayerData])
 
     useEffect(() => {
       loadreword('rewordRequested', '_avilableplayerid', '==', PlayerData.playerAppID, setunclamidreword)
@@ -87,94 +96,91 @@ export default function MyRewords() {
     }, [])
 
     return (
-      <ScrollView style={{ backgroundColor: 'black', flex: 1 }} >
-        {/* 
-      <View style={{ borderWidth: 1, borderColor: "white", padding: 10, margin: 10, borderRadius: 10, flexDirection: 'row', justifyContent: 'space-between' }} >
-        <Text style={{ color: 'gold', alignSelf: 'center' }} >
-          Claim your Reedeam now! AKDHDLNXNDA4
-        </Text>
-        <TouchableOpacity style={{ backgroundColor: 'gold', padding: 10, borderRadius: 10 }}  >
-          <Text style={{ color: 'black', fontWeight: 'bold' }} >
-            Claim
-          </Text>
-        </TouchableOpacity>
-
-      </View> */}
+      <View style={{ backgroundColor: 'black', flex: 1 }}>
         {
-          claimegamereword ? claimegamereword.map((_item, _index) => {
-            return (
-              <View key={_index} style={{ borderWidth: 1, borderColor: "white", padding: 10, margin: 5, borderRadius: 10, flexDirection: 'row', justifyContent: 'space-between' }} >
-                <View>
+          claimegamereword.length != 0 || Unclaimedreword != 0 ?
 
-                  <Text style={{ color: 'gold', alignSelf: 'center' }} >
-                    Well done! Your match-winning reward is ready!
-                  </Text>
-                  <View style={{ flexDirection: 'row', gap: 5 }} >
+            <ScrollView style={{ backgroundColor: 'black' }} >
+              {
+                claimegamereword ? claimegamereword.map((_item, _index) => {
+                  return (
+                    <View key={_index} style={{ borderWidth: 1, borderColor: "white", padding: 10, margin: 5, borderRadius: 10, flexDirection: 'row', justifyContent: 'space-between' }} >
+                      <View>
 
-                    <Image source={require('../Component/Coin.png')} style={{ height: 22, width: 22 }}  ></Image>
-                    <Text style={{ color: 'gold', alignSelf: 'center' }} >
-                      {_item._winnigCoin}
-                    </Text>
-                  </View>
-                </View>
-                <TouchableOpacity style={{ backgroundColor: 'gold', padding: 10, borderRadius: 10 }}
-                  onPress={() => {
-                    handleClamidcoin("gameReword", _item.id, _item._winnigCoin, PlayerData.playerAppID)
-                  }}
-                >
-                  <Text style={{ color: 'black', fontWeight: 'bold' }} >
-                    Claim
-                  </Text>
-                </TouchableOpacity>
+                        <Text style={{ color: 'gold', alignSelf: 'center' }} >
+                          Well done! Your match-winning reward is ready!
+                        </Text>
+                        <View style={{ flexDirection: 'row', gap: 5 }} >
 
-              </View>
-            )
-          }) : null
-        }
+                          <Image source={require('../Component/Coin.png')} style={{ height: 22, width: 22 }}  ></Image>
+                          <Text style={{ color: 'gold', alignSelf: 'center' }} >
+                            {_item._winnigCoin}
+                          </Text>
+                        </View>
+                      </View>
+                      <TouchableOpacity style={{ backgroundColor: 'gold', padding: 10, borderRadius: 10 }}
+                        onPress={() => {
+                          handleClamidcoin("gameReword", _item.id, _item._winnigCoin, PlayerData.playerAppID)
+                        }}
+                      >
+                        <Text style={{ color: 'black', fontWeight: 'bold' }} >
+                          Claim
+                        </Text>
+                      </TouchableOpacity>
 
-        {
-          Unclaimedreword ? Unclaimedreword.map((_item, _index) => {
-            return (
-              <View key={_index} style={{ borderWidth: 1, borderColor: "white", padding: 10, margin: 5, borderRadius: 10, flexDirection: 'row', justifyContent: 'space-between' }} >
-                <View>
+                    </View>
+                  )
+                }) : null
+              }
 
-                  <Text style={{ color: 'gold', alignSelf: 'center' }} >
-                    Claim your Reedeam of {_item._currency}{_item._cost} now!
-                  </Text>
-                  <Text style={{ color: 'gold', alignSelf: 'center' }} >
-                    {_item._reedeamCode}
-                  </Text>
-                </View>
-                <TouchableOpacity style={{ backgroundColor: 'gold', padding: 10, borderRadius: 10 }}
-                  onPress={() => {
-                    handleClamedRedeem('rewordRequested', _item.id, PlayerData.playerAppID, _item._cost, _item._reedeamCode, _item._currency)
-                  }}
+              {
+                Unclaimedreword ? Unclaimedreword.map((_item, _index) => {
+                  return (
+                    <View key={_index} style={{ borderWidth: 1, borderColor: "white", padding: 10, margin: 5, borderRadius: 10, flexDirection: 'row', justifyContent: 'space-between' }} >
+                      <View>
 
-                >
-                  <Text style={{ color: 'black', fontWeight: 'bold' }} >
-                    Claim
-                  </Text>
-                </TouchableOpacity>
+                        <Text style={{ color: 'gold', alignSelf: 'center' }} >
+                          Claim your Reedeam of {_item._currency}{_item._cost} now!
+                        </Text>
+                        <Text style={{ color: 'gold', alignSelf: 'center' }} >
+                          {_item._reedeamCode}
+                        </Text>
+                      </View>
+                      <TouchableOpacity style={{ backgroundColor: 'gold', padding: 10, borderRadius: 10 }}
+                        onPress={() => {
+                          handleClamedRedeem('rewordRequested', _item.id, PlayerData.playerAppID, _item._cost, _item._reedeamCode, _item._currency)
+                        }}
 
-              </View>
-            )
-          }) : null
+                      >
+                        <Text style={{ color: 'black', fontWeight: 'bold' }} >
+                          Claim
+                        </Text>
+                      </TouchableOpacity>
+
+                    </View>
+                  )
+                }) : null
+              }
+
+
+            </ScrollView> : null
         }
         <Text style={{ fontSize: 20, color: 'white', alignSelf: 'center', margin: 10 }} >
           Reword History
         </Text>
-        {
-          PlayerData ? PlayerData._rewordhistory.map((_item, _index) => {
+        <FlatList
+          data={historyList}
+          renderItem={({ item, index }) => {
             return (
-              <Text key={_index} style={{ color: 'lightgreen', alignSelf: 'flex-start', marginHorizontal: 15, marginVertical: 4 }} >
-                !!  {_item}
+              <Text style={{ color: 'lightgreen', alignSelf: 'flex-start', marginHorizontal: 15, marginVertical: 4 }} >
+                {index + 1}  {item}
               </Text>
             )
-          }) : null
+          }}
+        />
 
+      </View>
 
-        }
-      </ScrollView>
     )
   } catch (error) {
     console.log(error)

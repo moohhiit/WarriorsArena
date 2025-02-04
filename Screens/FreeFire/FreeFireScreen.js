@@ -5,11 +5,9 @@ import { Platform, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from
 import Icon, { Icons } from '../../Component/Icons';
 import Colors from '../../constants/Colors';
 import * as Animatable from 'react-native-animatable';
-import FreeFireBr from './FreeFireBr';
 import FreeFireCs from './FreeFireCs';
 import FreeFireSchedule from './FreeFireSchedule';
 const TabArr = [
-    // { route: 'FFbr', label: 'Home', type: Icons.Fontisto, activeIcon: 'map', inActiveIcon: 'map', component: FreeFireBr },
     { route: 'FFCs', label: 'Like', type: Icons.MaterialIcons, activeIcon: 'safety-divider', inActiveIcon: 'safety-divider', component: FreeFireCs },
     { route: 'FFShedule', label: 'Search', type: Icons.MaterialCommunityIcons, activeIcon: 'timeline-text', inActiveIcon: 'timeline-text-outline', component: FreeFireSchedule },
   ];

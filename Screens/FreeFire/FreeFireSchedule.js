@@ -17,34 +17,15 @@ export default function FreeFireSchedule() {
 
   const HIGHT = Dimensions.get('screen').height
   const getCurrentDate = () => {
-    const date = new Date(); // Get the current date
+    const date = new Date(); 
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const month = String(date.getMonth() + 1).padStart(2, '0'); 
     const day = String(date.getDate()).padStart(2, '0');
 
     return `${year}-${month}-${day}`;
   };
   const Navigation = useNavigation()
-  const FeatchMatchdetail = async (d) => {
-
-
-    setrefreshing(true)
-    try {
-      const Preomise = d.map(async (e) => {
-        const S_ = await firestore().collection('gameData').doc(e).get()
-        return S_.data()
-      })
-      const ScheduleMatch = await Promise.all(Preomise)
-      const FilterData = ScheduleMatch.filter(item => item !== undefined && item !== null);
-      setMatchDetail(FilterData)
-    }
-    catch (error) {
-      console.log(error)
-    }
-    finally {
-      setrefreshing(false)
-    }
-  }
+ 
   function sortByTime(objList) {
     const parseTime = (timeStr) => {
       const [time, modifier] = timeStr.split(" ");

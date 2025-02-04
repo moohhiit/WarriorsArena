@@ -10,36 +10,12 @@ import LottieView from 'lottie-react-native';
 export default function MyTeam() {
   try {
     const { initializing } = useContext(AuthContext)
-    const { PlayerData, featchDetail, TeamList } = useContext(DataContext)
-    const [isteam, setisteam] = useState(false)
+    const { PlayerData, TeamList } = useContext(DataContext)
     const [TeamrequestVisible, setTeamRequestVisible] = useState(false)
     const [CreateTeamVisible, setCreateTeamVisible] = useState(false)
-    const [td, settd] = useState([])
-
-
-    const detail = async () => {
-      try {
-        if (PlayerData) {
-          if (PlayerData.TeamDeatile) {
-            const d = await featchDetail('PlayerTeams', PlayerData.TeamDeatile)
-            settd(d)
-            setisteam(true)
-          }
-          else {
-            setisteam(false)
-          }
-        }
-      } catch (error) {
-        console.log(error)
-      }
-
-    }
 
 
 
-    useEffect(() => {
-      detail()
-    }, [])
 
     const Navigation = useNavigation()
     const HIGHT = Dimensions.get('screen').height
@@ -73,8 +49,8 @@ export default function MyTeam() {
                   <View style={{ flexDirection: 'row', justifyContent: 'space-around', padding: 6 }} >
 
                     <Icon type={Icons.AntDesign} name='search1' color='black' size={30} />
-                    <Text style={{ fontWeight: 1, fontSize: 18, alignSelf: 'center', color: 'black' }}  >
-                      Request Team
+                    <Text style={{ fontWeight: 1, fontSize: 18, alignSelf: 'center', color: 'black' , fontWeight:'bold' }}  >
+                      Send Request
                     </Text>
 
                   </View>
@@ -86,7 +62,7 @@ export default function MyTeam() {
                   style={{ backgroundColor: 'gold', flex: 2, margin: 10, borderRadius: 10 }} >
                   <View style={{ flexDirection: 'row', justifyContent: 'space-around', padding: 6 }} >
                     <Icon type={Icons.MaterialCommunityIcons} name='view-grid-plus' color='black' />
-                    <Text style={{ fontWeight: 1, fontSize: 18, alignSelf: 'center', color: 'black' }}  >
+                    <Text style={{ fontWeight: 1, fontSize: 18, alignSelf: 'center', color: 'black' , fontWeight:'bold'}}  >
                       Create Team
                     </Text>
                   </View>
