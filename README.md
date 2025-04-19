@@ -94,5 +94,5 @@ This project is distributed under the MIT License. See `LICENSE.txt` for more de
 ## Contact
 
 Feel free to reach out for collaboration or feedback:
-- GitHub: [Your Profile](https://github.com/your-username)
+- GitHub: [Your Profile](https://github.com/moohhiit/WarriorsArena)
 - Email: itzmohitsharma20@gmail.com
