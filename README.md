@@ -83,13 +83,6 @@ We welcome contributions! Here's how you can get involved:
 4. Push to the branch: `git push origin feature-branch`
 5. Submit a pull request
 
----
-
-## License
-
-This project is distributed under the MIT License. See `LICENSE.txt` for more details.
-
----
 
 ## Contact
 
