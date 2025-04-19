@@ -34,13 +34,19 @@ This app is built to enhance the experience of casual gaming events and tourname
 ## Screenshots
 
 1. **Home Screen**:
-   ![Home Screen](path/to/home_screen.png)
+   ![Home Screen](Screenshots/NoticeScreen.jpg)
 
-2. **Tournament Setup**:
-   ![Tournament Setup](path/to/tournament_setup.png)
-
-3. **Scoreboard**:
-   ![Scoreboard](path/to/scoreboard.png)
+2. **Team Screen**:
+   ![Team Screen](Screenshots/Team-Screen.jpg)
+  
+3. **Nevigation**:
+   ![Nevigation](Screenshots/Nevigation.jpg)
+  
+4. **Waw Shop**:
+   ![Waw Shop](Screenshots/Waw-Shop.jpg)
+   
+6. **History**:
+   ![History](Screenshots/History.jpg)
 
 Replace the placeholders (`path/to/screenshot.png`) with actual image paths.
 
