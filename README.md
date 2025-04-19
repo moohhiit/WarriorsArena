@@ -49,10 +49,10 @@ Replace the placeholders (`path/to/screenshot.png`) with actual image paths.
 ## Installation
 
 To get started with the app, follow these steps:
-1. Clone the repository: `git clone https://github.com/your-username/your-repo.git`
-2. Navigate to the project directory: `cd your-project`
+1. Clone the repository: `https://github.com/moohhiit/WarriorsArena.git`
+2. Navigate to the project directory: `cd WarriorsArena`
 3. Install dependencies: `npm install` (or relevant command)
-4. Start the app: `npm start` (or relevant command)
+4. Start the app: `npm run android` (or relevant command)
 
 ---
 
